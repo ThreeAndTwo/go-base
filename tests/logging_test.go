@@ -30,11 +30,22 @@ func TestLogCenter(t *testing.T) {
 	logger.Infof("show log type %s", "log center")
 }
 
-func TestAlert(t *testing.T) {
+func TestAlertDingDing(t *testing.T) {
 	logConfig := &logging.LogConfig{}
 	logConfig.EnableHandlerStd()
 	logConfig.EnableHandlerFile()
-	logConfig.SetAlertChannel(logging.NewDingDingAlertChanel("XXX"))
+	logConfig.SetAlertChannel(logging.NewDingDingAlertChanel(""))
+	logConfig.SetAlertLevel(logging.ErrorLevel)
+	logger := logging.GetLogger("test", "test", logConfig).Sugar()
+	logger.Errorf("show log type %s", "alert")
+	time.Sleep(time.Second)
+}
+
+func TestAlertSlack(t *testing.T) {
+	logConfig := &logging.LogConfig{}
+	logConfig.EnableHandlerStd()
+	logConfig.EnableHandlerFile()
+	logConfig.SetAlertChannel(logging.NewSlackAlertChanel("XXX@xxx"))
 	logConfig.SetAlertLevel(logging.ErrorLevel)
 	logger := logging.GetLogger("test", "test", logConfig).Sugar()
 	logger.Errorf("show log type %s", "alert")

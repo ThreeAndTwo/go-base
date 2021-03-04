@@ -6,10 +6,11 @@ type AlertSyncer struct {
 
 func (w *AlertSyncer) setChannel(service string, channel AlertChannelI) {
 	w.channel = channel
-	w.channel.SetService(service)
+	w.channel.SetServiceName(service)
 }
 
 func (w *AlertSyncer) Write(p []byte) (n int, err error) {
-	go w.channel.Send(string(p))
+	w.channel.SetMsg(string(p))
+	go w.channel.Send()
 	return len(p), nil
 }

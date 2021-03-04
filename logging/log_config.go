@@ -72,6 +72,8 @@ func GetLogConfig(config *config.Config) *LogConfig {
 		switch alert["channel"] {
 		case "dingding":
 			alertChanel = NewDingDingAlertChanel(alert["channel_param"])
+		case "slack":
+			alertChanel = NewSlackAlertChanel(alert["channel_param"])
 		default:
 			println("ignore unknown alert channel, " + alert["channel"])
 		}
