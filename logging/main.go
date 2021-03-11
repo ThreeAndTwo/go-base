@@ -126,9 +126,10 @@ func GetLogger(serviceName, moduleName string, config *LogConfig) *Logger {
 		options = append(options, zap.AddCaller())
 		// 开启文件及行号
 		options = append(options, zap.Development())
+	} else {
+		filed := zap.Fields(zap.String("service", serviceName), zap.String("module", moduleName))
+		options = append(options, filed)
 	}
-	filed := zap.Fields(zap.String("service", serviceName), zap.String("module", moduleName))
-	options = append(options, filed)
 	logger = zap.New(core, options...)
 	return logger
 }

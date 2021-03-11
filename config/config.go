@@ -2,7 +2,6 @@ package config
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/spf13/viper"
 )
 
@@ -16,7 +15,6 @@ func GetConfigFromLocal() (*Config, error) {
 	config.AddConfigPath("../conf")
 	config.AddConfigPath("../../conf")
 	config.AddConfigPath("../../../conf")
-	fmt.Println("go-base-config: try load config from local file")
 	err := config.ReadInConfig()
 	if err != nil {
 		return nil, err
@@ -29,7 +27,6 @@ func GetConfigFromContent(confContent []byte) *Config {
 	config.SetConfigName("config")
 	config.SetConfigType("yaml")
 	var err error
-	fmt.Println("go-base-config: try parse config using given data")
 	err = config.ReadConfig(bytes.NewBuffer(confContent))
 	if err != nil {
 		println("go-base-config: failed to parse config, %s", err)
