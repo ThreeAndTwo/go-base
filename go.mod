@@ -8,7 +8,9 @@ require (
 	github.com/apache/rocketmq-client-go/v2 v2.1.0
 	github.com/bluele/slack v0.0.0-20180528010058-b4b4d354a079
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/hashicorp/consul/api v1.4.0
+	github.com/jinzhu/gorm v1.9.16
 	github.com/magiconair/properties v1.8.1
 	github.com/onsi/gomega v1.14.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
