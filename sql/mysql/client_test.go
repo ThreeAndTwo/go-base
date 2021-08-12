@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 		t.Logf("err:%s", err)
 		t.Log("config: ", sql.config)
 		count := -1
-		err = sql.client.Table("defi_sync").Count(&count).Error
+		err = sql.Client.Table("defi_sync").Count(&count).Error
 		t.Logf("count: %d", count)
 		t.Logf("count err:%s", err)
 	})

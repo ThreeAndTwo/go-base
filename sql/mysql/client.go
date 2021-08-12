@@ -20,56 +20,64 @@ type Config struct {
 
 type MySQL struct {
 	config *Config
-	client *gorm.DB
+	Client *gorm.DB
 	exitCh chan struct{}
 }
 
-func New(config *Config) (*MySQL, error) {
-	if err := config.check(); err != nil {
+func New(c *Config) (*MySQL, error) {
+	if err := c.check(); err != nil {
 		return nil, fmt.Errorf("invalid config:%s", err)
 	}
 
-	url := config.user + ":" + config.pass + "@tcp(" + config.host + ")/" + config.db +
-		"?charset=utf8&parseTime=True&loc=Local"
+	url := c.user + ":" + c.pass + "@tcp(" + c.host + ")/" + c.db + "?charset=utf8&parseTime=True&loc=Local"
 	db, err := gorm.Open("mysql", url)
 	if err != nil {
 		return nil, err
 	}
 
-	db.DB().SetMaxIdleConns(config.maxIdleConn)
-	db.DB().SetMaxOpenConns(config.maxOpenConn)
-	db.DB().SetConnMaxIdleTime(config.maxIdleTimeConn)
-	db.DB().SetConnMaxLifetime(config.maxLifeTimeConn)
+	db.DB().SetMaxIdleConns(c.maxIdleConn)
+	db.DB().SetMaxOpenConns(c.maxOpenConn)
+	db.DB().SetConnMaxIdleTime(c.maxIdleTimeConn)
+	db.DB().SetConnMaxLifetime(c.maxLifeTimeConn)
 
 	client := &MySQL{
-		config: config,
-		client: db,
+		config: c,
+		Client: db,
 		exitCh: make(chan struct{}),
 	}
 	return client, nil
 }
 
-func (config *Config) check() error {
-	if "" == config.user || "" == config.pass || "" == config.host || "" == config.db {
+func (c *Config) check() error {
+	if "" == c.user || "" == c.pass || "" == c.host || "" == c.db {
 		return fmt.Errorf("config error")
 	}
 
-	if 0 == config.maxIdleConn || 0 == config.maxOpenConn {
-		config.maxIdleConn = 80
-		config.maxOpenConn = 80
+	if 0 == c.maxIdleConn || 0 == c.maxOpenConn {
+		c.maxIdleConn = 80
+		c.maxOpenConn = 80
 	}
 
-	if config.maxIdleConn != config.maxOpenConn {
-		config.maxOpenConn = config.maxIdleConn
+	if c.maxIdleConn != c.maxOpenConn {
+		c.maxOpenConn = c.maxIdleConn
 	}
 
-	if config.maxLifeTimeConn == time.Duration(0) {
-		config.maxLifeTimeConn = time.Duration(300)
+	if c.maxLifeTimeConn == time.Duration(0) {
+		c.maxLifeTimeConn = time.Duration(300)
 	}
 
-	if config.maxIdleTimeConn == time.Duration(0) {
-		config.maxIdleTimeConn = time.Duration(300)
+	if c.maxIdleTimeConn == time.Duration(0) {
+		c.maxIdleTimeConn = time.Duration(300)
 	}
 
 	return nil
+}
+
+func (mysql *MySQL) GetConfig() *Config {
+	return mysql.config
+}
+
+func (mysql *MySQL) Close() error {
+	close(mysql.exitCh)
+	return mysql.Client.Close()
 }
