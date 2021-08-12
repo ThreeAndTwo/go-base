@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+type Interface interface {
+}
+
 type Config struct {
 	User            string        `mapstructure:"user"`
 	Pass            string        `mapstructure:"pass"`
@@ -63,11 +66,11 @@ func (c *Config) check() error {
 	}
 
 	if c.MaxLifeTimeConn == time.Duration(0) {
-		c.MaxLifeTimeConn = time.Duration(300)
+		c.MaxLifeTimeConn = 600 * time.Second
 	}
 
 	if c.MaxIdleTimeConn == time.Duration(0) {
-		c.MaxIdleTimeConn = time.Duration(300)
+		c.MaxIdleTimeConn = 600 * time.Second
 	}
 
 	return nil
