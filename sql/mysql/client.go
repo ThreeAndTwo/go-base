@@ -8,14 +8,14 @@ import (
 )
 
 type Config struct {
-	user            string        `mapstructure:"user"`
-	pass            string        `mapstructure:"pass"`
-	host            string        `mapstructure:"host"`
-	db              string        `mapstructure:"db"`
-	maxIdleConn     int           `mapstructure:"max_idle_conn"`
-	maxOpenConn     int           `mapstructure:"max_open_conn"`
-	maxLifeTimeConn time.Duration `mapstructure:"max_lifetime_conn"`
-	maxIdleTimeConn time.Duration `mapstructure:"max_idletime_conn"`
+	User            string        `mapstructure:"user"`
+	Pass            string        `mapstructure:"pass"`
+	Host            string        `mapstructure:"host"`
+	Db              string        `mapstructure:"db"`
+	MaxIdleConn     int           `mapstructure:"max_idle_conn"`
+	MaxOpenConn     int           `mapstructure:"max_open_conn"`
+	MaxLifeTimeConn time.Duration `mapstructure:"max_lifetime_conn"`
+	MaxIdleTimeConn time.Duration `mapstructure:"max_idletime_conn"`
 }
 
 type MySQL struct {
@@ -29,16 +29,16 @@ func New(c *Config) (*MySQL, error) {
 		return nil, fmt.Errorf("invalid config:%s", err)
 	}
 
-	url := c.user + ":" + c.pass + "@tcp(" + c.host + ")/" + c.db + "?charset=utf8&parseTime=True&loc=Local"
+	url := c.User + ":" + c.Pass + "@tcp(" + c.Host + ")/" + c.Db + "?charset=utf8&parseTime=True&loc=Local"
 	db, err := gorm.Open("mysql", url)
 	if err != nil {
 		return nil, err
 	}
 
-	db.DB().SetMaxIdleConns(c.maxIdleConn)
-	db.DB().SetMaxOpenConns(c.maxOpenConn)
-	db.DB().SetConnMaxIdleTime(c.maxIdleTimeConn)
-	db.DB().SetConnMaxLifetime(c.maxLifeTimeConn)
+	db.DB().SetMaxIdleConns(c.MaxIdleConn)
+	db.DB().SetMaxOpenConns(c.MaxOpenConn)
+	db.DB().SetConnMaxIdleTime(c.MaxIdleTimeConn)
+	db.DB().SetConnMaxLifetime(c.MaxLifeTimeConn)
 
 	client := &MySQL{
 		config: c,
@@ -49,25 +49,25 @@ func New(c *Config) (*MySQL, error) {
 }
 
 func (c *Config) check() error {
-	if "" == c.user || "" == c.pass || "" == c.host || "" == c.db {
+	if "" == c.User || "" == c.Pass || "" == c.Host || "" == c.Db {
 		return fmt.Errorf("config error")
 	}
 
-	if 0 == c.maxIdleConn || 0 == c.maxOpenConn {
-		c.maxIdleConn = 80
-		c.maxOpenConn = 80
+	if 0 == c.MaxIdleConn || 0 == c.MaxOpenConn {
+		c.MaxIdleConn = 80
+		c.MaxOpenConn = 80
 	}
 
-	if c.maxIdleConn != c.maxOpenConn {
-		c.maxOpenConn = c.maxIdleConn
+	if c.MaxIdleConn != c.MaxOpenConn {
+		c.MaxOpenConn = c.MaxIdleConn
 	}
 
-	if c.maxLifeTimeConn == time.Duration(0) {
-		c.maxLifeTimeConn = time.Duration(300)
+	if c.MaxLifeTimeConn == time.Duration(0) {
+		c.MaxLifeTimeConn = time.Duration(300)
 	}
 
-	if c.maxIdleTimeConn == time.Duration(0) {
-		c.maxIdleTimeConn = time.Duration(300)
+	if c.MaxIdleTimeConn == time.Duration(0) {
+		c.MaxIdleTimeConn = time.Duration(300)
 	}
 
 	return nil
