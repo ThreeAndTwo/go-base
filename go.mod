@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/alicebob/miniredis/v2 v2.15.1
-	github.com/apache/rocketmq-client-go v1.2.4
 	github.com/apache/rocketmq-client-go/v2 v2.1.0
 	github.com/bluele/slack v0.0.0-20180528010058-b4b4d354a079
 	github.com/go-redis/redis v6.15.9+incompatible

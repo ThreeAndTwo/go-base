@@ -38,7 +38,7 @@ func TestRocketMQ_ListenAndPublish(t *testing.T) {
 		{
 			name: "test_listenandpublish",
 			args: args{
-				topic:      "demo",
+				topic:      "test",
 				expression: "*",
 				listener: func(data mq.Message) error {
 					t.Log(data)
