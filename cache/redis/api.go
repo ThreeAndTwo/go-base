@@ -68,6 +68,7 @@ type ZSetOp interface {
 	ZRange(key string, start, stop int64) ([]string, error)
 	ZRevRange(key string, start, stop int64) ([]string, error)
 	ZRangeByScore(key string, opt redis.ZRangeBy) ([]string, error)
+	ZRangeByScoreWithScores(key string, opt redis.ZRangeBy) ([]redis.Z, error)
 	ZRevRangeByScore(key string, opt redis.ZRangeBy) ([]string, error)
 	ZRank(key, member string) (int64, error)
 	ZRevRank(key, member string) (int64, error)
