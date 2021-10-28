@@ -328,7 +328,7 @@ func (r *Redis) ZRevRange(key string, start, stop int64) ([]string, error) {
 }
 
 func (r *Redis) ZRevRangeWithScores(key string, start, stop int64) ([]redis.Z, error) {
-	return r.client.ZRangeWithScores(r.ctx, key, start, stop).Result()
+	return r.client.ZRevRangeWithScores(r.ctx, key, start, stop).Result()
 }
 
 func (r *Redis) ZRangeByScore(key string, opt *redis.ZRangeBy) ([]string, error) {
