@@ -6,10 +6,10 @@ import (
 
 func TestNew(t *testing.T) {
 	config := &Config{
-		user: "root",
-		pass: "123456",
-		host: "127.0.0.1:3306",
-		db: "test",
+		User: "root",
+		Pass: "123456",
+		Host: "127.0.0.1:3306",
+		Db: "test",
 	}
 
 	t.Run("testsql", func(t *testing.T) {
@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 		t.Logf("err:%s", err)
 		t.Log("config: ", sql.config)
 		count := -1
-		err = sql.Client.Table("defi_sync").Count(&count).Error
+		err = sql.Client.Table("test").Count(&count).Error
 		t.Logf("count: %d", count)
 		t.Logf("count err:%s", err)
 	})
