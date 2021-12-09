@@ -1,4 +1,4 @@
-package mongodb
+package mongo
 
 import (
 	"context"
@@ -27,7 +27,7 @@ type Mongo struct {
 	exitCh chan struct{}
 }
 
-func New(c *Config) (*mongo.Client, error) {
+func New(c *Config) (*Mongo, error) {
 	if err := c.check(); err != nil {
 		return nil, err
 	}
@@ -46,7 +46,14 @@ func New(c *Config) (*mongo.Client, error) {
 
 	clientOpts := options.Client().ApplyURI(c.URI).SetAuth(credential)
 	client, err := mongo.Connect(ctx, clientOpts)
-	return client, err
+
+	mongoClient := &Mongo{
+		config: c,
+		Client: client,
+		exitCh: make(chan struct{}),
+	}
+
+	return mongoClient, err
 }
 
 func (c *Config) check() error {

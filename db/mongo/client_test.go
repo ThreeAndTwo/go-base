@@ -1,4 +1,4 @@
-package mongodb
+package mongo
 
 import (
 	"context"
@@ -53,13 +53,13 @@ func TestMongo(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			client, err := New(tt.fields.config)
+			mongo, err := New(tt.fields.config)
 			if err != nil {
 				t.Errorf("new mongo error %s", err)
 				return
 			}
 
-			collection := client.Database("testing").Collection("numbers")
+			collection := mongo.Client.Database("testing").Collection("numbers")
 			res, err := collection.InsertOne(context.TODO(), bson.D{{"name", "pi"}, {"value", 3.14159}})
 			if (err == nil) == tt.want {
 				t.Logf("res: %s", res)
