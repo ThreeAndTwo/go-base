@@ -1,0 +1,14 @@
+listen:
+  addr: 0.0.0.0
+  port: 8099
+log:
+  handlerStd: true
+  handlerFile: true
+  fileDir: logs
+  level: debug
+  alert:
+    level: error
+    channel: dingding
+    channel_param: 7105d13033d18df523bc3cb3e16a8de30bfb31265e7d2113413cfa4661756ce7
+module:
+  key: World
