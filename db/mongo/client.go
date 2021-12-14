@@ -17,6 +17,7 @@ type Config struct {
 	AuthSource              string            `mapstructure:"auth_source"`
 	Username                string            `mapstructure:"username"`
 	Password                string            `mapstructure:"password"`
+	Database                string            `mapstructure:"database"`
 	PasswordSet             bool              `mapstructure:"password_set"`
 	TimeOut                 time.Duration     `mapstructure:"timeout"`
 }
