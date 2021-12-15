@@ -25,7 +25,7 @@ func (c *Client) Get(key string) (interface{}, error) {
 	return val, nil
 }
 
-func (c *Client) Set(key string, value interface{}) error {
+func (c *Client) Set(key string, value interface{}, expiration time.Duration) error {
 	c.cache.SetDefault(key, value)
 	return nil
 }

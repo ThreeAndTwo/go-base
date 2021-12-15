@@ -12,7 +12,7 @@ var (
 
 type Interface interface {
 	Get(key string) (interface{}, error)
-	Set(key string, value interface{}) error
+	Set(key string, value interface{}, expiration time.Duration) error
 	Exist(key string) (bool, error)
 	SetWithExpiration(key string, value interface{}, expiration time.Duration) error
 }

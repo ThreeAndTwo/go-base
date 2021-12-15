@@ -12,6 +12,7 @@ func init() {
 	var err error
 	redisClient, err = New(&Config{
 		Addr: "127.0.0.1:6379",
+		Pass: "",
 	})
 	if err != nil {
 		panic(err)
@@ -73,7 +74,7 @@ func TestRedis_SetAndGet(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := redisClient.Set(tt.args.key, tt.args.value); err != nil {
+			if err := redisClient.Set(tt.args.key, tt.args.value, time.Minute); err != nil {
 				t.Fatalf("set failed:%s", err)
 			}
 			got, err := redisClient.Get(tt.args.key)

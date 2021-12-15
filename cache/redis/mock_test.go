@@ -3,6 +3,7 @@ package redis
 import (
 	"github.com/magiconair/properties/assert"
 	"testing"
+	"time"
 )
 
 var mocker *Mocker
@@ -15,7 +16,7 @@ func init() {
 	}
 }
 func TestMockerGetAndSet(t *testing.T) {
-	if err := mocker.Set("test", "hello"); err != nil {
+	if err := mocker.Set("test", "hello", 1 * time.Minute); err != nil {
 		t.Fatal(err)
 	}
 	got, err := mocker.Get("test")

@@ -2,7 +2,7 @@ package redis
 
 import (
 	"github.com/deng00/go-base/cache"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"time"
 )
 
@@ -60,30 +60,31 @@ type SetOp interface {
 }
 
 type ZSetOp interface {
-	ZAdd(key string, members ...redis.Z) (int64, error)
+	ZAdd(key string, members ...*redis.Z) (int64, error)
 	ZScore(key, member string) (float64, error)
 	ZIncrBy(key string, increment float64, member string) (float64, error)
 	ZCard(key string) (int64, error)
 	ZCount(key, min, max string) (int64, error)
 	ZRange(key string, start, stop int64) ([]string, error)
+	ZRangeWithScores(key string, start, stop int64) ([]redis.Z, error)
 	ZRevRange(key string, start, stop int64) ([]string, error)
-	ZRangeByScore(key string, opt redis.ZRangeBy) ([]string, error)
-	ZRangeByScoreWithScores(key string, opt redis.ZRangeBy) ([]redis.Z, error)
-	ZRevRangeByScore(key string, opt redis.ZRangeBy) ([]string, error)
+	ZRevRangeWithScores(key string, start, stop int64) ([]redis.Z, error)
+	ZRangeByScore(key string, opt *redis.ZRangeBy) ([]string, error)
+	ZRevRangeByScore(key string, opt *redis.ZRangeBy) ([]string, error)
 	ZRank(key, member string) (int64, error)
 	ZRevRank(key, member string) (int64, error)
 	ZRem(key string, members ...interface{}) (int64, error)
 	ZRemRangeByLex(key, min, max string) (int64, error)
 	ZRemRangeByRank(key string, start, stop int64) (int64, error)
 	ZRemRangeByScore(key, min, max string) (int64, error)
-	ZRangeByLex(key string, opt redis.ZRangeBy) ([]string, error)
+	ZRangeByLex(key string, opt *redis.ZRangeBy) ([]string, error)
 	ZLexCount(key, min, max string) (int64, error)
 	ZScan(key string, cursor uint64, match string, count int64) (keys []string, newCursor uint64, err error)
-	ZUnionStore(dest string, store redis.ZStore, keys ...string) (int64, error)
-	ZInterStore(dest string, store redis.ZStore, keys ...string) (int64, error)
+	ZUnionStore(dest string, store *redis.ZStore) (int64, error)
+	ZInterStore(dest string, store *redis.ZStore) (int64, error)
 }
 type MapOp interface {
-	HSet(key string, field string, value interface{}) (bool, error)
+	HSet(key string, field string, value interface{}) (int64, error)
 	HSetNX(key string, field string, value interface{}) (bool, error)
 	HGet(key string, field string) (value string, err error)
 	HExists(key string, field string) (bool, error)
@@ -91,7 +92,7 @@ type MapOp interface {
 	HLen(key string) (int64, error)
 	HIncrBy(key string, field string, incr int64) (int64, error)
 	HIncrByFloat(key string, field string, incr float64) (float64, error)
-	HMSet(key string, fields map[string]interface{}) (string, error)
+	HMSet(key string, fields map[string]interface{}) (bool, error)
 	HMGet(key string, fields ...string) ([]interface{}, error)
 	HKeys(key string) ([]string, error)
 	HVals(key string) ([]string, error)
