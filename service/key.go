@@ -8,7 +8,7 @@ func (s *Manager) SetKeyValue(key string, value []byte) error {
 		Flags: 0,
 		Value: value,
 	}
-	_, err := s.consulClient.KV().Put(kv, nil)
+	_, err := s.client.KV().Put(kv, nil)
 	if err != nil {
 		return err
 	}
@@ -16,7 +16,7 @@ func (s *Manager) SetKeyValue(key string, value []byte) error {
 }
 
 func (s *Manager) GetKeyValue(key string) (string, error) {
-	kv, _, err := s.consulClient.KV().Get(key, nil)
+	kv, _, err := s.client.KV().Get(key, nil)
 	if err != nil {
 		return "", err
 	}

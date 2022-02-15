@@ -1,17 +1,16 @@
 package service
 
 import (
-	"bytes"
-	"encoding/json"
 	"github.com/hashicorp/consul/api"
 	"github.com/hashicorp/consul/api/watch"
 )
 
 func (s *Manager) WatchKey(key string, callback func(key string, value []byte)) error {
-	var data = `{"type":"key", "key":"` + key + `"}`
-	param, err := parseParam(data)
-	if err != nil {
-		return err
+	var param = map[string]interface{}{
+		"type":       "key",
+		"key":        key,
+		"datacenter": s.config.Datacenter,
+		"token":      s.config.Token,
 	}
 	plan, _ := watch.Parse(param)
 	plan.HybridHandler = func(blockParamVal watch.BlockingParamVal, val interface{}) {
@@ -21,14 +20,15 @@ func (s *Manager) WatchKey(key string, callback func(key string, value []byte)) 
 		}
 		callback(key, v)
 	}
-	return plan.Run(getConsulConfig().Address)
+	return plan.RunWithConfig(s.config.Address, s.config)
 }
 
 func (s *Manager) WatchService(service string, callback func(service string, serviceList *List)) error {
-	var data = `{"type":"service", "service":"` + service + `"}`
-	param, err := parseParam(data)
-	if err != nil {
-		return err
+	var param = map[string]interface{}{
+		"type":       "service",
+		"service":    service,
+		"datacenter": s.config.Datacenter,
+		"token":      s.config.Token,
 	}
 	plan, _ := watch.Parse(param)
 	plan.HybridHandler = func(blockParamVal watch.BlockingParamVal, val interface{}) {
@@ -39,14 +39,5 @@ func (s *Manager) WatchService(service string, callback func(service string, ser
 		ss, _ := parseServices(service, v)
 		callback(service, ss)
 	}
-	return plan.Run(getConsulConfig().Address)
-}
-
-func parseParam(data string) (map[string]interface{}, error) {
-	var param map[string]interface{}
-	dec := json.NewDecoder(bytes.NewReader([]byte(data)))
-	if err := dec.Decode(&param); err != nil {
-		return nil, err
-	}
-	return param, nil
+	return plan.RunWithConfig(s.config.Address, s.config)
 }

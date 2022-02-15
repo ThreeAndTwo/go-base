@@ -14,36 +14,40 @@ type Info struct {
 	Port        int
 	Timestamp   int
 }
-type Manager struct {
-	serviceInfo  *Info
-	consulClient *api.Client
-	quitChan     chan os.Signal
-	checker      *api.AgentServiceCheck
-}
 
 type List []Info
 
-func getConsulConfig() *api.Config {
-	consulConf := api.DefaultConfig()
-	addr := os.Getenv("APP_CONSUL_ADDR")
-	if addr != "" {
-		consulConf.Address = addr
-	} else {
-		consulConf.Address = "127.0.0.1:8500"
-	}
-	return consulConf
+type Config struct {
+	Addr       string `mapstructure:"addr"`
+	Token      string `mapstructure:"token"`
+	Datacenter string `mapstructure:"data_center"`
+	WatchKey   string `mapstructure:"watch_key"`
 }
 
-func (s *Manager) Init(serviceName string, ip string, port int) {
-	s.serviceInfo = &Info{
-		ServiceName: serviceName,
-		ServiceID:   "",
-		IP:          ip,
-		Port:        port,
-		Timestamp:   time.Now().Nanosecond(),
+type Manager struct {
+	config      *api.Config
+	serviceInfo *Info
+	client      *api.Client
+	quitChan    chan os.Signal
+	checker     *api.AgentServiceCheck
+}
+
+func NewManager(config *Config) *Manager {
+	_config := api.DefaultConfig()
+	_config.Address = config.Addr
+	_config.Token = config.Token
+	if config.Datacenter != "" {
+		_config.Datacenter = config.Datacenter
 	}
-	s.consulClient, _ = api.NewClient(getConsulConfig())
-	s.quitChan = make(chan os.Signal, 1)
+	_client, err := api.NewClient(_config)
+	if err != nil {
+		return nil
+	}
+	return &Manager{config: _config, client: _client, quitChan: make(chan os.Signal, 1)}
+}
+
+func (s *Manager) SetServiceInfo(serviceInfo *Info) {
+	s.serviceInfo = serviceInfo
 }
 
 func (s *Manager) getServiceId() string {
@@ -64,7 +68,7 @@ func (s *Manager) Start() error {
 		Tags:    tags,
 		Check:   s.checker,
 	}
-	err := s.consulClient.Agent().ServiceRegister(service)
+	err := s.client.Agent().ServiceRegister(service)
 	if err != nil {
 		return err
 	}
@@ -78,16 +82,16 @@ func (s *Manager) Close() {
 
 func (s *Manager) WaitToUnDeregisterService() {
 	<-s.quitChan
-	if s.consulClient == nil {
+	if s.client == nil {
 		return
 	}
-	if err := s.consulClient.Agent().ServiceDeregister(s.getServiceId()); err != nil {
+	if err := s.client.Agent().ServiceDeregister(s.getServiceId()); err != nil {
 		println("deregister service failed, " + err.Error())
 	}
 }
 
 func (s *Manager) Discover(serviceName string) (*List, error) {
-	servicesData, _, err := s.consulClient.Health().Service(serviceName, "", true,
+	servicesData, _, err := s.client.Health().Service(serviceName, "", true,
 		&api.QueryOptions{})
 	if err != nil {
 		return nil, err

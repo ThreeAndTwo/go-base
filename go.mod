@@ -1,6 +1,6 @@
 module github.com/deng00/go-base
 
-go 1.14
+go 1.15
 
 require (
 	github.com/alicebob/miniredis/v2 v2.15.1
