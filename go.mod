@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/alicebob/miniredis/v2 v2.15.1
-	github.com/apache/rocketmq-client-go/v2 v2.1.0
+	github.com/apache/rocketmq-client-go/v2 v2.1.1
 	github.com/bluele/slack v0.0.0-20180528010058-b4b4d354a079
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.6.0
