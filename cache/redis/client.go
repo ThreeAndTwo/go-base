@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/deng00/go-base/cache"
 	"github.com/go-redis/redis/v8"
@@ -412,6 +413,9 @@ func New(config *Config) (client *Redis, err error) {
 		Password: config.Pass,
 		DB:       config.DB,
 		PoolSize: config.PoolSize,
+		TLSConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
 	})
 	_, err = cli.Ping(ctx).Result()
 	if err != nil {
