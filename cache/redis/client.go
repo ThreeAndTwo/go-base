@@ -11,10 +11,11 @@ import (
 
 // Config redis client config
 type Config struct {
-	Addr     string `mapstructure:"addr"`
-	Pass     string `mapstructure:"pass"`
-	DB       int    `mapstructure:"db"`
-	PoolSize int    `mapstructure:"pool_size"`
+	Addr          string `mapstructure:"addr"`
+	Pass          string `mapstructure:"pass"`
+	DB            int    `mapstructure:"db"`
+	PoolSize      int    `mapstructure:"pool_size"`
+	TlsSkipVerify bool   `mapstructure:"tls_skip_verify"`
 }
 
 func (c Config) Check() error {
@@ -408,15 +409,16 @@ func New(config *Config) (client *Redis, err error) {
 	if err := config.Check(); err != nil {
 		return nil, fmt.Errorf("invalid config:%s", err)
 	}
-	cli := redis.NewClient(&redis.Options{
+	options := &redis.Options{
 		Addr:     config.Addr,
 		Password: config.Pass,
 		DB:       config.DB,
 		PoolSize: config.PoolSize,
-		TLSConfig: &tls.Config{
-			InsecureSkipVerify: true,
-		},
-	})
+	}
+	if config.TlsSkipVerify {
+		options.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+	}
+	cli := redis.NewClient(options)
 	_, err = cli.Ping(ctx).Result()
 	if err != nil {
 		return nil, err
