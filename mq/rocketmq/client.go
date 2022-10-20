@@ -71,24 +71,8 @@ func (r *Client) Publish(msg mq.Message) (err error) {
 	return
 }
 
-// New create new rocket mq client
-func New(config *Config) (client *Client, err error) {
-	pd, err := v2.NewProducer(
-		producer.WithGroupName(config.GroupID),
-		producer.WithNameServer([]string{config.Addr}),
-		producer.WithRetry(3),
-		producer.WithCredentials(primitive.Credentials{
-			AccessKey: config.AccessKey,
-			SecretKey: config.SecretKey,
-		}),
-		producer.WithNamespace(config.Namespace),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("create new pd err:%s", err)
-	}
-	if err := pd.Start(); err != nil {
-		return nil, err
-	}
+// NewConsumer create new rocket mq client
+func NewConsumer(config *Config) (client *Client, err error) {
 	model := consumer.Clustering
 	if config.Broadcast {
 		model = consumer.BroadCasting
@@ -109,16 +93,46 @@ func New(config *Config) (client *Client, err error) {
 	}
 	client = &Client{
 		config:       config,
-		producer:     pd,
+		producer:     nil,
 		pushConsumer: cs,
+	}
+	return
+}
+
+// NewProducer create new rocket mq client
+func NewProducer(config *Config) (client *Client, err error) {
+	pd, err := v2.NewProducer(
+		producer.WithGroupName(config.GroupID),
+		producer.WithNameServer([]string{config.Addr}),
+		producer.WithRetry(3),
+		producer.WithCredentials(primitive.Credentials{
+			AccessKey: config.AccessKey,
+			SecretKey: config.SecretKey,
+		}),
+		producer.WithNamespace(config.Namespace),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("create new pd err:%s", err)
+	}
+	if err := pd.Start(); err != nil {
+		return nil, err
+	}
+	client = &Client{
+		config:       config,
+		producer:     pd,
+		pushConsumer: nil,
 	}
 	return
 }
 
 // Close close rocket mq client
 func (r *Client) Close() {
-	_ = r.pushConsumer.Shutdown()
-	_ = r.producer.Shutdown()
+	if r.pushConsumer != nil {
+		_ = r.pushConsumer.Shutdown()
+	}
+	if r.producer != nil {
+		_ = r.producer.Shutdown()
+	}
 }
 
 // StartListen start client

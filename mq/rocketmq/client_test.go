@@ -7,12 +7,20 @@ import (
 	"time"
 )
 
-var client *Client
+var clientProducer *Client
+var clientConsumer *Client
 
 func init() {
 	var err error
-	client, err = New(&Config{
+	clientProducer, err = NewProducer(&Config{
 		GroupID: "test_group",
+		Addr:    "127.0.0.1:9876",
+	})
+	if err != nil {
+		panic(err)
+	}
+	clientConsumer, err = NewConsumer(&Config{
+		GroupID: "test_group_consumer",
 		Addr:    "127.0.0.1:9876",
 	})
 	if err != nil {
@@ -21,7 +29,8 @@ func init() {
 }
 func TestMain(m *testing.M) {
 	m.Run()
-	client.Close()
+	clientProducer.Close()
+	clientConsumer.Close()
 }
 
 func TestRocketMQ_ListenAndPublish(t *testing.T) {
@@ -49,14 +58,14 @@ func TestRocketMQ_ListenAndPublish(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := client.Listen(tt.args.topic, tt.args.expression, tt.args.listener); err != nil {
+			if err := clientConsumer.Listen(tt.args.topic, tt.args.expression, tt.args.listener); err != nil {
 				t.Fatalf("listen failed:%s", err)
 			}
-			if err := client.StartListen(); err != nil {
+			if err := clientConsumer.StartListen(); err != nil {
 				panic(fmt.Sprintf("mq start failed:%s", err))
 				return
 			}
-			if err := client.Publish(mq.Message{
+			if err := clientProducer.Publish(mq.Message{
 				Topic: tt.args.topic,
 				Tags:  "test_topic",
 				Keys:  "test_key",

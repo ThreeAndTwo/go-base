@@ -11,8 +11,8 @@ var redisClient *Redis
 func init() {
 	var err error
 	redisClient, err = New(&Config{
-		Addr:          "172.16.88.88:6379",
-		Pass:          "5du1uo0owbournci",
+		Addr:          "127.0.0.1:6379",
+		Pass:          "",
 		TlsSkipVerify: false,
 	})
 	if err != nil {
