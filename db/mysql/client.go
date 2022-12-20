@@ -32,7 +32,7 @@ func New(c *Config) (*MySQL, error) {
 		return nil, fmt.Errorf("invalid config:%s", err)
 	}
 
-	url := c.User + ":" + c.Pass + "@tcp(" + c.Host + ")/" + c.Db + "?charset=utf8&parseTime=True&loc=Local"
+	url := c.User + ":" + c.Pass + "@tcp(" + c.Host + ")/" + c.Db + "?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open("mysql", url)
 	if err != nil {
 		return nil, err
