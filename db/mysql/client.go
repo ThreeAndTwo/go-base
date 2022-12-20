@@ -15,6 +15,8 @@ type Config struct {
 	Pass            string        `mapstructure:"pass"`
 	Host            string        `mapstructure:"host"`
 	Db              string        `mapstructure:"db"`
+	Charset         string        `mapstructure:"charset"`
+	Collation       string        `mapstructure:"collation"`
 	MaxIdleConn     int           `mapstructure:"max_idle_conn"`
 	MaxOpenConn     int           `mapstructure:"max_open_conn"`
 	MaxLifeTimeConn time.Duration `mapstructure:"max_lifetime_conn"`
@@ -32,7 +34,7 @@ func New(c *Config) (*MySQL, error) {
 		return nil, fmt.Errorf("invalid config:%s", err)
 	}
 
-	url := c.User + ":" + c.Pass + "@tcp(" + c.Host + ")/" + c.Db + "?charset=utf8mb4&parseTime=True&loc=Local"
+	url := c.User + ":" + c.Pass + "@tcp(" + c.Host + ")/" + c.Db + "?charset=" + c.Charset + "&collation=" + c.Collation + "&parseTime=True&loc=Local"
 	db, err := gorm.Open("mysql", url)
 	if err != nil {
 		return nil, err
@@ -71,6 +73,14 @@ func (c *Config) check() error {
 
 	if c.MaxIdleTimeConn == time.Duration(0) {
 		c.MaxIdleTimeConn = 600 * time.Second
+	}
+
+	if c.Charset == "" {
+		c.Charset = "utf8mb4"
+	}
+
+	if c.Collation == "" {
+		c.Collation = "utf8mb4_unicode_ci"
 	}
 
 	return nil
